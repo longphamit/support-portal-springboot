@@ -40,6 +40,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.prefs.Preferences;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 @Service
 @Transactional
 @Qualifier("userDetailService")
@@ -177,13 +179,15 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
 
     private void saveProfileImage(User user, MultipartFile profileImage) throws IOException {
         if(null!=profileImage){
+            //user/home/supportportal/user
+            //
             Path userFolder= Paths.get(FileConstant.USER_FOLDER+user.getUsername()).toAbsolutePath().normalize();
             if(!Files.exists(userFolder)){
                 Files.createDirectories(userFolder);
                 LOGGER.info(FileConstant.DIRECTORY_CREATED);
             }
             Files.deleteIfExists(Paths.get(userFolder+user.getUsername()+FileConstant.DOT+FileConstant.JPG_EXTENSION));
-            Files.copy(profileImage.getInputStream(),userFolder.resolve(user.getUsername()+FileConstant.DOT+FileConstant.JPG_EXTENSION));
+            Files.copy(profileImage.getInputStream(),userFolder.resolve(user.getUsername()+FileConstant.DOT+FileConstant.JPG_EXTENSION),REPLACE_EXISTING);
             user.setProfileImageUrl(setProfileImageUrl(user.getUsername()));
             userRepository.save(user);
             LOGGER.info(FileConstant.FILE_SAVED_IN_FILE_SYSTEM);
@@ -191,7 +195,7 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
     }
 
     private String setProfileImageUrl(String username) {
-        return ServletUriComponentsBuilder.fromCurrentContextPath().path(FileConstant.USER_IMAGE_PATH+username+FileConstant.FORWARD_SLASH).toUriString();
+        return ServletUriComponentsBuilder.fromCurrentContextPath().path(FileConstant.USER_IMAGE_PATH+username+FileConstant.FORWARD_SLASH+username+FileConstant.DOT+FileConstant.JPG_EXTENSION).toUriString();
     }
 
     private Role getRoleEnumName(String role) {
