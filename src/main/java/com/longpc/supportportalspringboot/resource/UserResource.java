@@ -33,7 +33,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = {"/","/user"})
-@CrossOrigin
 public class UserResource extends ExceptionHandling {
     @Autowired
     private IUserService userService;
