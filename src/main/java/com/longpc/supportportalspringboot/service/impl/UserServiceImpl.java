@@ -139,7 +139,7 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
     }
     @Override
     public List<User> getUsers() {
-        return null;
+        return userRepository.findAll();
     }
 
     @Override

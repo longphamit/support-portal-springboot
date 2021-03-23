@@ -32,7 +32,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = {"/","/user"})
+@RequestMapping(path = "/user")
 public class UserResource extends ExceptionHandling {
     @Autowired
     private IUserService userService;
