@@ -47,8 +47,6 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 @Transactional
 @Qualifier("userDetailService")
 public class UserServiceImpl implements IUserService, UserDetailsService {
-    public static final String USERNAME_ALREADY_EXISTED = "Username already existed !";
-    public static final String EMAIL_ALREADY_EXISTED = "Email already existed !";
     private Logger LOGGER= LoggerFactory.getLogger(getClass());
     @Autowired
     private UserRepository userRepository;
@@ -100,7 +98,7 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
         return null;
     }
     private String getTemporaryProfileImageUrl(String username){
-        return ServletUriComponentsBuilder.fromCurrentContextPath().path(FileConstant.DEFAULT_USER_IMAGE_PATH+username).toUriString();
+        return FileConstant.TEMP_PROFILE_IMAGE_BASE_URL+username;
     }
     private String generateUserId(){
         return RandomStringUtils.randomNumeric(10);
@@ -117,21 +115,21 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
         if(StringUtils.isNotBlank(currentUsername)){
             User currentUser=findUserByUsername(currentUsername);
             if(currentUser==null){
-                throw new UserNotFoundException("No user found by username = "+currentUsername);
+                throw new UserNotFoundException(UserImplConstant.NO_USER_FOUND_BY_USERNAME+currentUsername);
             }
             if(userByNewUsername != null && !currentUser.getId().equals(userByNewUsername.getId())) {
-                throw new UsernameExistedException(USERNAME_ALREADY_EXISTED);
+                throw new UsernameExistedException(UserImplConstant.USERNAME_ALREADY_EXISTS);
             }
             if(userByNewEmail != null && !currentUser.getId().equals(userByNewEmail.getId())) {
-                throw new EmailExistedException(EMAIL_ALREADY_EXISTED);
+                throw new EmailExistedException(UserImplConstant.EMAIL_ALREADY_EXISTS);
             }
             return currentUser;
         }else{
             if(userByNewUsername!=null){
-                throw new UsernameExistedException(USERNAME_ALREADY_EXISTED);
+                throw new UsernameExistedException(UserImplConstant.USERNAME_ALREADY_EXISTS);
             }
             if(userByNewEmail!=null){
-                throw new EmailExistedException(EMAIL_ALREADY_EXISTED);
+                throw new EmailExistedException(UserImplConstant.EMAIL_ALREADY_EXISTS);
             }
             return null;
         }
@@ -153,7 +151,7 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
     }
 
     @Override
-    public User addNewUser(String firstName, String lastName, String username, String email, String role, boolean isNonLocked, boolean isActive, MultipartFile profileImage) throws Exception {
+    public User addNewUser(String firstName, String lastName, String username, String email, String role, boolean isActive, boolean isNonLocked, MultipartFile profileImage) throws Exception {
         if(null==validateNewUsernameAndEmail(StringUtils.EMPTY,username,email)){
             User user= new User();
             String password=generatePassword();
