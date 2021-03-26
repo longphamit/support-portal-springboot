@@ -1,5 +1,6 @@
 package com.longpc.supportportalspringboot.service.impl;
 
+import com.longpc.supportportalspringboot.constant.Authority;
 import com.longpc.supportportalspringboot.constant.FileConstant;
 import com.longpc.supportportalspringboot.constant.SecurityConstant;
 import com.longpc.supportportalspringboot.constant.UserImplConstant;
@@ -118,11 +119,10 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
             if(currentUser==null){
                 throw new UserNotFoundException("No user found by username = "+currentUsername);
             }
-
-            if(userByNewUsername!=null&&currentUser.getId().equals(userByNewUsername.getId())){
+            if(userByNewUsername != null && !currentUser.getId().equals(userByNewUsername.getId())) {
                 throw new UsernameExistedException(USERNAME_ALREADY_EXISTED);
             }
-            if(userByNewEmail!=null&&currentUser.getId().equals(userByNewEmail.getId())){
+            if(userByNewEmail != null && !currentUser.getId().equals(userByNewEmail.getId())) {
                 throw new EmailExistedException(EMAIL_ALREADY_EXISTED);
             }
             return currentUser;
